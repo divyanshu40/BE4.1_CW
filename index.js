@@ -52,6 +52,14 @@ async function addNewMovie(newMovieData) {
     const addedMovie = await new movie(newMovieData).save();
     return { newMovie: addedMovie };
 }
+// function to delete movie
+async function deleteMovieById(movieId) {
+    const deletedMovie = await movie.findByIdAndDelete(movieId);
+    if (!deletedMovie) {
+        return null;
+    }
+    return { deletedMovie: deletedMovie };
+}
 
 // api to get all movies
 app.get("/movies", async (req, res) => {
@@ -116,6 +124,19 @@ app.post("/movies/new", async (req, res) => {
         return res.status(201).json(response);
     } catch(error) {
         res.status(500).json({ error: error.message });
+    }
+});
+// api to delete movie
+app.delete("/movies/delete/:id", async (req, res) => {
+    let movieId = req.params.id;
+    try {
+        let response = await deleteMovieById(movieId);
+        if (response === null) {
+            return res.status(404).json({ message: "Movie not found"});
+        }
+        return res.status(200).json(response);
+    } catch(error) {
+        res.status(500).json({ error: error.message});
     }
 });
 
